@@ -1,11 +1,29 @@
 const express = require('express')
-const app = express()
-const port = 3000
 
-app.get('/ping', (req, res) => {
-  res.send('Pong!')
-})
+class ApplicationServer {
+    constructor() {
+		this.app = express();
+        
+		this.initExpress();
+        this.initControllers();
+		this.start();
+	}
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+    initExpress() {
+		this.app.set('port', 3000);
+	}
+
+    initControllers() {
+        require("./PingController.js")(this.app);
+	}
+
+    start() {
+		let self = this;
+
+        this.app.listen(this.app.get('port'), () => {
+            console.log(`App listening on port ${this.app.get('port')}`)
+        });
+	}
+}
+
+new ApplicationServer();
