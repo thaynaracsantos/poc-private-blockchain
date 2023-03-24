@@ -14,7 +14,9 @@ class BlockchainController extends BaseController {
         this.app.get('/blockchain/block/hash/:hash', this.handleRequest(this.getBlockByHash));
         this.app.get('/blockchain/is-valid', this.handleRequest(this.isValidBlockchain));    
         this.app.post('/blockchain/block', this.handleRequest(this.addBlock)); 
-        this.app.get('/blockchain/block/data', this.handleRequest(this.getBlockData));
+        this.app.get('/blockchain/owner/:owner', this.handleRequest(this.getBlockchanByOwner));
+        this.app.post('/blockchain/block/signed', this.handleRequest(this.addBlockSigned)); 
+        this.app.post('/blockchain/owner/request-validation', this.handleRequest(this.requestValidation)); 
     }
 
     getPing = async (req, res) => {        
@@ -63,10 +65,38 @@ class BlockchainController extends BaseController {
         res.status(200).json(block);
     };
 
-    getBlockData = async (req, res) => {       
-        const blockData = await this.blockchain.getBlockData();
+    requestValidation = async (req, res) => {
+        if(req.body.address) {
+            const address = req.body.address;
+            const message = await this.blockchain.requestValidation(address);
+            req.logger.info(message);
+            res.status(200).json(message);
+        } else {
+            return res.status(400).send("Check the Body Parameter!");
+        }
+    };
+
+    addBlockSigned = async (req, res) => {
+        if(req.body.address && req.body.message && req.body.signature && req.body.info) {
+            const address = req.body.address;
+            const message = req.body.message;
+            const signature = req.body.signature;
+            const info = req.body.info;
+
+            const block = await this.blockchain.addBlockSigned(address, message, signature, info);
+            req.logger.info(block);
+            res.status(200).json(block);
+        } 
+        else {
+            res.status(400).send("Check the Body Parameter!");
+        }    
+    };
+
+    getBlockchanByOwner = async (req, res) => { 
+        const owner = req.params.owner;     
+        const blockData = await this.blockchain.getBlockchanByOwner(owner);
         req.logger.info(blockData);
-        res.status(200).json(blockData);
+        res.status(200).json(blockData); 
     };
 }
 

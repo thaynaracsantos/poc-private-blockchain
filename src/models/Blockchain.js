@@ -1,5 +1,6 @@
 const Block = require('./Block.js');
 const GenesisBlock = require('./GenesisBlock.js');
+const bitcoinMessage = require('bitcoinjs-message');
 
 class Blockchain {
     constructor() {
@@ -29,12 +30,14 @@ class Blockchain {
         resolve(block); 
     });
 
-    getBlockData = (hash) => new Promise((resolve, reject) => {
+    getBlockchanByOwner = (owner) => new Promise((resolve, reject) => {
         let blockData = [];
         this.chain.forEach(block => {
             block.getBData().then(data => {
                 if (data !== null) {
-                    blockData.push(data);
+                    if (data.owner == owner) {
+                        blockData.push(data);
+                    }                    
                 }  
             });          
         });
@@ -61,6 +64,30 @@ class Blockchain {
             });
         }
         resolve(true);
+    });
+
+    requestValidation = (address) => new Promise((resolve, reject) => {
+        let message = `${address}:${new Date().getTime().toString().slice(0,-3)}:infoRegistry`;
+        resolve(message);  
+    });
+
+    addBlockSigned = (address, message, signature, info) => new Promise((resolve, reject) => {
+        let time = parseInt(message.split(':')[1]);
+        let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
+        let timeElapsed = currentTime - time;
+
+        if (timeElapsed > 5 * 60) {
+            throw new Error('Time elapsed is greater than 5 minutes');
+        }
+
+        let isValid = bitcoinMessage.verify(message, address, signature);
+        if (!isValid) {
+            throw new Error('Invalid signature');
+        }
+
+        this.addBlock({ owner: address, info }).then(addedBlock => {
+            resolve(addedBlock);  
+        });   
     });
 
     addBlock = (data) => new Promise((resolve, reject) => {
