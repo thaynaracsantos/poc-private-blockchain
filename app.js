@@ -47,7 +47,7 @@ class ApplicationServer {
     initErrorMiddleware = () => {
         this.app.use((err, req, res, next) => {
             req.logger.error({message: err.message, stackTrace: err.stack});
-            res.status(500).send('Internal server error');
+            res.status(500).send(err.message);
         });
     };
 

@@ -22,14 +22,14 @@ class BlockchainController extends BaseController {
     };
 
     getLatestBlock = async (req, res) => {      
-        const latestBlock = this.blockchain.getLatestBlock();  
+        const latestBlock = await this.blockchain.getLatestBlock();  
         req.logger.info(latestBlock);
         res.status(200).json(latestBlock);
     };
 
     getBlockByIndex = async (req, res) => {  
         const index = parseInt(req.params.index);    
-        const block = this.blockchain.getBlockByIndex(index);  
+        const block = await this.blockchain.getBlockByIndex(index);  
         if (block !== null) {
             req.logger.info(block);
             res.status(200).json(block);
@@ -40,7 +40,7 @@ class BlockchainController extends BaseController {
 
     getBlockByHash = async (req, res) => {  
         const hash = req.params.hash;    
-        const block = this.blockchain.getBlockByHash(hash);  
+        const block = await this.blockchain.getBlockByHash(hash);  
         if (block !== null) {
             req.logger.info(block);
             res.status(200).json(block);
@@ -50,15 +50,14 @@ class BlockchainController extends BaseController {
     };
 
     isValidBlockchain = async (req, res) => {  
-        const hash = req.params.hash;    
-        const isValid = this.blockchain.isValid();
+        const isValid = await this.blockchain.isValid();
         req.logger.info(isValid);
         res.status(200).json(isValid);
     };
 
-    addBlock = async (req, res) => {  
-        const data = req.body;    
-        const block = this.blockchain.addBlock(data);
+    addBlock = async (req, res) => {
+        const data = req.body;        
+        const block = await this.blockchain.addBlock(data);
         req.logger.info(block);
         res.status(200).json(block);
     };

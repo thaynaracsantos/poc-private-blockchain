@@ -6,21 +6,24 @@ class Block {
         this.timestamp = new Date().getTime();
         this.data = data;
         this.previousHash = previousHash;
-        this.hash = this.calculateHash();
+        this.calculateHash().then(hash => {this.hash = hash});
     }
 
-    calculateHash = () => {
+    calculateHash = () => new Promise((resolve, reject) => {
         const dataAsString = `${this.index}${this.timestamp}${JSON.stringify(this.data)}${this.previousHash}`;
         const hash = SHA256(dataAsString).toString();
-        return hash;
-    }
+        resolve(hash);
+    });
 
-    isValid = () => {
+    isValid = () => new Promise((resolve, reject) => {
         if (typeof this.data !== 'object') {
             return false;
         }
-        return this.calculateHash() === this.hash;
-    }
+
+        this.calculateHash().then(hash => {
+            resolve(this.hash === hash);
+        });
+    });
 }
 
 module.exports = Block;

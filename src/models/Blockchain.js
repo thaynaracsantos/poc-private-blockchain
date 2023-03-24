@@ -14,23 +14,24 @@ class Blockchain {
         }
     }
 
-    getLatestBlock = () => {
-        return this.chain[this.chain.length - 1];
-    }
+    getLatestBlock = () => new Promise((resolve, reject) => {
+        const block = this.chain[this.chain.length - 1];
+        resolve(block); 
+    });
 
-    getBlockByIndex = (index) => {
-        let block = this.chain.find(p => p.index === index);
-        return block; 
-    }
+    getBlockByIndex = (index) => new Promise((resolve, reject) => {
+        const block = this.chain.find(p => p.index === index);
+        resolve(block); 
+    });
 
-    getBlockByHash = (hash) => {
-        let block = this.chain.find(p => p.hash === hash);
-        return block; 
-    }
+    getBlockByHash = (hash) => new Promise((resolve, reject) => {
+        const block = this.chain.find(p => p.hash === hash);
+        resolve(block); 
+    });
 
-    isValid = () => {
+    isValid = () => new Promise((resolve, reject) => {
         if (this.chain.length === 0) {
-            return false;
+            resolve(false);
         }
 
         for (let i = 1; i < this.chain.length; i++) {
@@ -38,25 +39,37 @@ class Blockchain {
             const previousBlock = this.chain[i - 1];
 
             if (currentBlock.previousHash !== previousBlock.hash) {
-                return false;
+                resolve(false);
             }
 
-            if (!currentBlock.isValid()) {
-                return false;
-            }
+            currentBlock.isValid().then(isValid => {
+                if (!isValid) {
+                    resolve(false);
+                }
+            });
         }
-        return true;
-    }
+        resolve(true);
+    });
 
-    addBlock = (data) => {
+    addBlock = (data) => new Promise((resolve, reject) => {
         if (!data || typeof data !== 'object') {
-            throw new Error('Block data must be an object');
+            reject(new Error('Block data must be an object'));
         }
 
-        const newBlock = new Block(this.chain.length, data, this.getLatestBlock().hash)
-        this.chain.push(newBlock);
-        return newBlock;
-    }
+        this.getLatestBlock().then(block => {
+            const newBlock = new Block(this.chain.length, data, block.hash);
+            this.chain.push(newBlock);
+
+            this.isValid().then(isValid => {
+                if (isValid) {
+                    resolve(newBlock);
+                } else {
+                    reject(new Error('The chain is invalid'));
+                }
+
+            });
+        });
+    });
 }
 
 module.exports = Blockchain;
