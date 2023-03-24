@@ -14,6 +14,7 @@ class BlockchainController extends BaseController {
         this.app.get('/blockchain/block/hash/:hash', this.handleRequest(this.getBlockByHash));
         this.app.get('/blockchain/is-valid', this.handleRequest(this.isValidBlockchain));    
         this.app.post('/blockchain/block', this.handleRequest(this.addBlock)); 
+        this.app.get('/blockchain/block/data', this.handleRequest(this.getBlockData));
     }
 
     getPing = async (req, res) => {        
@@ -60,6 +61,12 @@ class BlockchainController extends BaseController {
         const block = await this.blockchain.addBlock(data);
         req.logger.info(block);
         res.status(200).json(block);
+    };
+
+    getBlockData = async (req, res) => {       
+        const blockData = await this.blockchain.getBlockData();
+        req.logger.info(blockData);
+        res.status(200).json(blockData);
     };
 }
 

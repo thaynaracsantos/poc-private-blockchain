@@ -29,6 +29,18 @@ class Blockchain {
         resolve(block); 
     });
 
+    getBlockData = (hash) => new Promise((resolve, reject) => {
+        let blockData = [];
+        this.chain.forEach(block => {
+            block.getBData().then(data => {
+                if (data !== null) {
+                    blockData.push(data);
+                }  
+            });          
+        });
+        resolve(blockData); 
+    });    
+
     isValid = () => new Promise((resolve, reject) => {
         if (this.chain.length === 0) {
             resolve(false);
