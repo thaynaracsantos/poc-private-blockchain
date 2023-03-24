@@ -40,7 +40,8 @@ class ApplicationServer {
 	}
     
     initControllers = () => {
-        require("./PingController.js")(this.app);
+        require("./src/controllers/PingController.js")(this.app);
+        require("./src/controllers/BlockchainController.js")(this.app);
     }
 
     initErrorMiddleware = () => {
