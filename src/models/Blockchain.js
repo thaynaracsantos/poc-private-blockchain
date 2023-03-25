@@ -1,6 +1,10 @@
 const Block = require('./Block.js');
 const GenesisBlock = require('./GenesisBlock.js');
 const bitcoinMessage = require('bitcoinjs-message');
+const bitcoin = require('bitcoinjs-lib');
+const crypto = require('crypto');
+const ecpair = require('ecpair');
+const tinysecp = require('tiny-secp256k1');
 
 class Blockchain {
     constructor() {
@@ -80,7 +84,8 @@ class Blockchain {
             throw new Error('Time elapsed is greater than 5 minutes');
         }
 
-        let isValid = bitcoinMessage.verify(message, address, signature);
+        const network = 'testnet';
+        let isValid = bitcoinMessage.verify(message, address, Buffer.from(signature, 'hex'), network);
         if (!isValid) {
             throw new Error('Invalid signature');
         }
@@ -108,6 +113,35 @@ class Blockchain {
 
             });
         });
+    });
+
+    generateKeyPair = () => new Promise((resolve, reject) => {
+        const ECPair = ecpair.ECPairFactory(tinysecp);
+        const keyPair = ECPair.fromPrivateKey(crypto.randomBytes(32));
+        const privateKeyHex = keyPair.privateKey.toString('hex');
+        const publicKeyHex = keyPair.publicKey.toString('hex');
+      
+        const keyPairData = {
+            privateKeyHex,
+            publicKeyHex,
+        };
+      
+        resolve(keyPairData);
+    });
+
+    generateAddress = (publicKeyHex) => new Promise((resolve, reject) => {
+        const publicKey = Buffer.from(publicKeyHex, 'hex');
+        const { address } = bitcoin.payments.p2pkh({ pubkey: publicKey });
+      
+        resolve(address);
+    });
+
+    signMessage = (message, privateKeyHex) => new Promise((resolve, reject) => {
+        const privateKey = Buffer.from(privateKeyHex, 'hex');
+        const compressed = true;
+        const network = 'testnet';
+        const signature = bitcoinMessage.sign(message, privateKey, compressed, network);
+        resolve(signature.toString('hex'));
     });
 }
 

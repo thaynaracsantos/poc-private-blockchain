@@ -17,11 +17,15 @@
   },
   "homepage": "https://github.com/thaynaracsantos/poc-private-blockchain#readme",
   "dependencies": {
+    "bitcoinjs-lib": "^6.1.0",
     "bitcoinjs-message": "^2.2.0",
+    "crypto": "^1.0.1",
     "crypto-js": "^4.1.1",
+    "ecpair": "^2.1.0",
     "express": "^4.18.2",
     "hex2ascii": "0.0.3",
     "morgan": "^1.10.0",
+    "tiny-secp256k1": "^2.2.1",
     "winston": "^3.8.2"
   }
 }
