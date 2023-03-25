@@ -14,12 +14,12 @@ class BlockchainController extends BaseController {
         this.app.get('/blockchain/block/hash/:hash', this.handleRequest(this.getBlockByHash));
         this.app.get('/blockchain/is-valid', this.handleRequest(this.isValidBlockchain));    
         this.app.post('/blockchain/block', this.handleRequest(this.addBlock)); 
-        this.app.get('/blockchain/owner/:owner', this.handleRequest(this.getBlockchanByOwner));
-        this.app.post('/blockchain/block/signed', this.handleRequest(this.addBlockSigned)); 
-        this.app.post('/blockchain/owner/request-validation', this.handleRequest(this.requestValidation)); 
         this.app.post('/blockchain/owner/generate/keys', this.handleRequest(this.generateKeyPair)); 
         this.app.post('/blockchain/owner/generate/address', this.handleRequest(this.generateAddress)); 
+        this.app.post('/blockchain/owner/generate/message', this.handleRequest(this.generateMessage)); 
         this.app.post('/blockchain/owner/sign/message', this.handleRequest(this.signMessage)); 
+        this.app.post('/blockchain/block/signed', this.handleRequest(this.addBlockSigned)); 
+        this.app.get('/blockchain/owner/:owner', this.handleRequest(this.getBlockchanByOwner));
     }
 
     getPing = async (req, res) => {        
@@ -68,15 +68,49 @@ class BlockchainController extends BaseController {
         res.status(200).json(block);
     };
 
-    requestValidation = async (req, res) => {
+    generateKeyPair = async (req, res) => { 
+        const keyPairData = await this.blockchain.generateKeyPairWithMPC();
+
+        req.logger.info(keyPairData);
+        res.status(200).json(keyPairData); 
+    };
+
+    generateAddress = async (req, res) => {
+        if(req.body.publicKeyHex) {
+            const publicKeyHex = req.body.publicKeyHex;
+
+            const address = await this.blockchain.generateAddress(publicKeyHex);
+            req.logger.info(address);
+            res.status(200).json(address);
+        } 
+        else {
+            res.status(400).send("Check the Body Parameter!");
+        }    
+    };
+
+    generateMessage = async (req, res) => {
         if(req.body.address) {
             const address = req.body.address;
-            const message = await this.blockchain.requestValidation(address);
+            const message = await this.blockchain.generateMessage(address);
             req.logger.info(message);
             res.status(200).json(message);
         } else {
             return res.status(400).send("Check the Body Parameter!");
         }
+    };
+
+    signMessage = async (req, res) => {
+        if(req.body.message && req.body.privateKeyHex) {
+            const message = req.body.message;
+            const privateKeyHex = req.body.privateKeyHex;
+
+            const signature = await this.blockchain.signMessage(message, privateKeyHex)
+            req.logger.info(signature);
+            res.status(200).json(signature);
+        } 
+        else {
+            res.status(400).send("Check the Body Parameter!");
+        }    
     };
 
     addBlockSigned = async (req, res) => {
@@ -101,41 +135,6 @@ class BlockchainController extends BaseController {
         req.logger.info(blockData);
         res.status(200).json(blockData); 
     };
-
-    generateKeyPair = async (req, res) => { 
-        const keyPairData = await this.blockchain.generateKeyPair();
-
-        req.logger.info(keyPairData);
-        res.status(200).json(keyPairData); 
-    };
-
-    generateAddress = async (req, res) => {
-        if(req.body.publicKeyHex) {
-            const publicKeyHex = req.body.publicKeyHex;
-
-            const address = await this.blockchain.generateAddress(publicKeyHex);
-            req.logger.info(address);
-            res.status(200).json(address);
-        } 
-        else {
-            res.status(400).send("Check the Body Parameter!");
-        }    
-    };
-
-    signMessage = async (req, res) => {
-        if(req.body.message && req.body.privateKeyHex) {
-            const message = req.body.message;
-            const privateKeyHex = req.body.privateKeyHex;
-
-            const signature = await this.blockchain.signMessage(message, privateKeyHex)
-            req.logger.info(signature);
-            res.status(200).json(signature);
-        } 
-        else {
-            res.status(400).send("Check the Body Parameter!");
-        }    
-    };
-
 }
 
 module.exports = (app) => new BlockchainController(app);

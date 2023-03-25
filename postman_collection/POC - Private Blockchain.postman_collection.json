@@ -94,7 +94,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/blockchain/block/hash/bc582f7a29ea03bfc45201f36705ff2811b225bbf96cefcdce1852c908aecb9d\"",
+					"raw": "http://localhost:3000/blockchain/block/hash/b19c518cdeee3b97ce4e3890341fa046280b1b400f4dceae783b8b537fac8dca",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -104,7 +104,7 @@
 						"blockchain",
 						"block",
 						"hash",
-						"bc582f7a29ea03bfc45201f36705ff2811b225bbf96cefcdce1852c908aecb9d\""
+						"b19c518cdeee3b97ce4e3890341fa046280b1b400f4dceae783b8b537fac8dca"
 					]
 				}
 			},
@@ -125,27 +125,6 @@
 					"path": [
 						"blockchain",
 						"is-valid"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Read By Owner",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/blockchain/owner/1KhDFNcY6hXxtw9BkDiCUndNg2s7zJa9sq",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"blockchain",
-						"owner",
-						"1KhDFNcY6hXxtw9BkDiCUndNg2s7zJa9sq"
 					]
 				}
 			},
@@ -209,7 +188,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"publicKeyHex\": \"03062ccf6e940cfc16a8c1d8774b5744f1d9fbda7b5d18fdb7a22c59e9e6c2a228\"\r\n}",
+					"raw": "{\r\n    \"publicKeyHex\": \"03b31ca03d6cbde80242140a388066f48539cf3751644ec050f482b6704c190b81\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -240,7 +219,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"address\": \"1KhDFNcY6hXxtw9BkDiCUndNg2s7zJa9sq\"\r\n}",
+					"raw": "{\r\n    \"address\": \"133mY127Fje26e6DiUuCebFqnQMowF44uS\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -248,7 +227,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/blockchain/owner/request-validation",
+					"raw": "http://localhost:3000/blockchain/owner/generate/message",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -257,7 +236,8 @@
 					"path": [
 						"blockchain",
 						"owner",
-						"request-validation"
+						"generate",
+						"message"
 					]
 				}
 			},
@@ -270,7 +250,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"message\": \"1KhDFNcY6hXxtw9BkDiCUndNg2s7zJa9sq:1679706014:infoRegistry\",\r\n    \"privateKeyHex\": \"b7ba9ba8d3d66b2ecc66dee004a5317f0a9e4466184173cb1c425de51ab09dfb\"\r\n}",
+					"raw": "{\r\n    \"message\": \"133mY127Fje26e6DiUuCebFqnQMowF44uS:1679770515:infoRegistry\",\r\n    \"privateKeyHex\": \"8011dd97776922f25e505ed403fef31bb766ef74d048815ba4c44c11d0b3cc26f8b73031707712e9f6f15857cc4f89c541c\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -301,7 +281,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"address\": \"1KhDFNcY6hXxtw9BkDiCUndNg2s7zJa9sq\",\r\n    \"message\": \"1KhDFNcY6hXxtw9BkDiCUndNg2s7zJa9sq:1679706014:infoRegistry\",\r\n    \"signature\": \"1fa240942bae0a4551a18ef7ff98bf7bc22a5a28779f8f897ee1fa3baa0025d27241b4bfc659f3698b56fda2ec5d42b00b179a2054eff3ec3ebc30d60dba0a3626\",\r\n    \"info\": {\r\n        \"cpf\": \"57395143320\",\r\n        \"name\": \"Fulano 2\"\r\n\t}\r\n}",
+					"raw": "{\r\n    \"address\": \"133mY127Fje26e6DiUuCebFqnQMowF44uS\",\r\n    \"message\": \"133mY127Fje26e6DiUuCebFqnQMowF44uS:1679770515:infoRegistry\",\r\n    \"signature\": \"1f8708f61ca2f4386f16dffb6b787a0736bb5c678e5d042a5be757a2ed822221f627596f3f9f080c3b4c506c234cc468ce58cc7fb5549fddf6ac9b55ed4a065732\",\r\n    \"info\": {\r\n        \"cpf\": \"57395143320\",\r\n        \"name\": \"Fulano 2\"\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -319,6 +299,27 @@
 						"blockchain",
 						"block",
 						"signed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read By Owner",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/blockchain/owner/133mY127Fje26e6DiUuCebFqnQMowF44uS",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"blockchain",
+						"owner",
+						"133mY127Fje26e6DiUuCebFqnQMowF44uS"
 					]
 				}
 			},

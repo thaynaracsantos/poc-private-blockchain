@@ -25,6 +25,8 @@
     "express": "^4.18.2",
     "hex2ascii": "0.0.3",
     "morgan": "^1.10.0",
+    "secrets": "^1.1.5",
+    "secrets.js-grempe": "^2.0.0",
     "tiny-secp256k1": "^2.2.1",
     "winston": "^3.8.2"
   }
