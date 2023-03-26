@@ -78,14 +78,8 @@ class Blockchain {
         });
     });
 
-    generateKeyPairWithMPC = () => new Promise((resolve, reject) => {
+    _deconstructPrivateKey = (privateKeyHex) => new Promise((resolve, reject) => {
         try {
-            const ECPair = ecpair.ECPairFactory(tinysecp);
-            const keyPair = ECPair.fromPrivateKey(crypto.randomBytes(32));
-
-            const privateKeyHex = keyPair.privateKey.toString('hex');
-            const publicKeyHex = keyPair.publicKey.toString('hex');
-
             const shares = secrets.share(privateKeyHex, 5, 3);
 
             const parties = ['party1', 'party2', 'party3', 'party4'];
@@ -100,14 +94,29 @@ class Blockchain {
                 fs.writeFileSync(filename, text);
             }
 
-            const ownerPrivateKeyHex = shares[0];          
+            const ownerPrivateKeyHex = shares[0];   
 
-            const keyPairData = {
-                privateKeyHex : ownerPrivateKeyHex,
-                publicKeyHex,
-            };
+            //Save in the application database
+            fs.writeFileSync(`owner.txt`, ownerPrivateKeyHex); 
 
-            resolve(keyPairData);
+            resolve();
+        } catch (err) {
+            reject(err);
+        }
+    });
+
+    generateKeyPairWithMPC = () => new Promise((resolve, reject) => {
+        try {
+            const ECPair = ecpair.ECPairFactory(tinysecp);
+            const keyPair = ECPair.fromPrivateKey(crypto.randomBytes(32));
+
+            const privateKeyHex = keyPair.privateKey.toString('hex');
+            const publicKeyHex = keyPair.publicKey.toString('hex'); 
+            
+            this._deconstructPrivateKey(privateKeyHex)
+            .then(() => {    
+                resolve(publicKeyHex);
+            });
         } catch (err) {
             reject(err);
         }
@@ -116,13 +125,14 @@ class Blockchain {
     generateAddress = (publicKeyHex) => new Promise((resolve, reject) => {
         const publicKey = Buffer.from(publicKeyHex, 'hex');
         const { address } = bitcoin.payments.p2pkh({ pubkey: publicKey });
-      
+
         resolve(address);
     });
 
     generateMessage = (address) => new Promise((resolve, reject) => {
         let message = `${address}:${new Date().getTime().toString().slice(0,-3)}:infoRegistry`;
-        resolve(message);  
+
+        resolve(message);
     });
 
     _reconstructPrivateKey = (ownerPrivateKeyHex) => new Promise((resolve, reject) => {
@@ -148,13 +158,20 @@ class Blockchain {
         }
     });
 
-    signMessage = (message, privateKeyHex) => new Promise((resolve, reject) => {        
+    signMessageWithMPC = (message) => new Promise((resolve, reject) => {           
+        //Read from the application database
+        const privateKeyHex = fs.readFileSync(`owner.txt`, 'utf8');
+
         this._reconstructPrivateKey(privateKeyHex)
         .then(privateKey => { 
             const compressed = true;
             const network = 'testnet';
             const signature = bitcoinMessage.sign(message, privateKey, compressed, network);
-            resolve(signature.toString('hex'));      
+
+            this._deconstructPrivateKey(privateKey.toString('hex'))
+            .then(() => {   
+                resolve(signature.toString('hex'));
+            });                  
         })
         .catch(err => {
             reject(err);
